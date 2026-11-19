@@ -11,7 +11,14 @@ public class Demo {
                 "Result e1, 40h @ 20     -> " + calculator.calculateNetPay("e1", 40, 20));
         System.out.println(
                 "Result e2, 50h @ 30     -> " + calculator.calculateNetPay("e2", 50, 30));
-        System.out.println(
-                "Result unknown employee -> " + calculator.calculateNetPay("unknown", 40, 20));
+        showMissingEmployee(calculator);
+    }
+
+    private static void showMissingEmployee(PayrollCalculator calculator) {
+        try {
+            calculator.calculateNetPay("unknown", 40, 20);
+        } catch (EmployeeNotFoundException missingEmployee) {
+            System.err.println("Payroll calculation failed. " + missingEmployee.getMessage());
+        }
     }
 }

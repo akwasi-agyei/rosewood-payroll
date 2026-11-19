@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryEmployeeRepository implements EmployeeRepository {
-
     private final Map<String, Employee> employees = new HashMap<>();
 
     public InMemoryEmployeeRepository() {
@@ -14,6 +13,6 @@ public class InMemoryEmployeeRepository implements EmployeeRepository {
 
     @Override
     public Employee findById(String id) {
-        return employees.get(id); // returns null when the id is not found
+        return employees.get(id);
     }
 }

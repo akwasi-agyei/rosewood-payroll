@@ -9,7 +9,11 @@ public class PayrollCalculator {
     private static final double MEDIUM_TAX_RATE = 0.15;
     private static final double HIGH_TAX_RATE = 0.25;
 
-    private final EmployeeRepository repository = new InMemoryEmployeeRepository();
+    private final EmployeeRepository repository;
+
+    public PayrollCalculator(EmployeeRepository repository) {
+        this.repository = repository;
+    }
 
     public double calculateNetPay(String employeeId, double hoursWorked, double hourlyRate) {
         try {

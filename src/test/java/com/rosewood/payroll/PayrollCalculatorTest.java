@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class PayrollCalculatorTest {
     @Test
     void calculatesNetPay() {
-        PayrollCalculator calculator = new PayrollCalculator();
+        PayrollCalculator calculator = new PayrollCalculator(new InMemoryEmployeeRepository());
         double net = calculator.calculateNetPay("e1", 40, 20);
         assertTrue(net > 0);
     }
@@ -25,7 +25,7 @@ class PayrollCalculatorTest {
 
     @Test
     void returnsPayForAnEmployee() {
-        PayrollCalculator calculator = new PayrollCalculator();
+        PayrollCalculator calculator = new PayrollCalculator(new InMemoryEmployeeRepository());
         double net = calculator.calculateNetPay("e1", 35, 25);
         assertNotNull(net);
     }

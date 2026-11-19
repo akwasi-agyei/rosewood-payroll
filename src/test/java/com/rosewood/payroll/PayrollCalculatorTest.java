@@ -44,4 +44,14 @@ class PayrollCalculatorTest {
     void appliesTheBandRateToAllGrossPay(double grossPay, double expectedNetPay) {
         assertEquals(expectedNetPay, calculator.calculateNetPay("e1", 1, grossPay), PAY_TOLERANCE);
     }
+
+    @ParameterizedTest
+    @CsvSource({"20, 40, 40, 20", "20, 50, 25, 40", "25, 200, 40, 125"})
+    void equalGrossPayProducesEqualNetPay(
+            double firstHours, double firstRate, double secondHours, double secondRate) {
+        double firstNetPay = calculator.calculateNetPay("e1", firstHours, firstRate);
+        double secondNetPay = calculator.calculateNetPay("e1", secondHours, secondRate);
+
+        assertEquals(firstNetPay, secondNetPay, PAY_TOLERANCE);
+    }
 }

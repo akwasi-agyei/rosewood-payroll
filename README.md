@@ -44,3 +44,14 @@ The integration test demonstrates this with a hypothetical band from **GHS 10,00
 | **Rewrote** | The positive-pay check now asserts the correct amount. The overtime test now calls the real calculator. The non-null check on a number was replaced with checks for actual outcomes, including valid zero pay and an unknown employee. Mockito is used for the lookup failure, and integration tests run the real components together. |
 
 The starter tests stayed green when the overtime premium was temporarily set to zero. The rewritten overtime test failed on the same change because net pay dropped from GHS 1,402.50 to GHS 1,275.00. That shows the test can catch a missed overtime payment.
+
+### Extra improvement - Ensure equal gross pay gives equal net pay
+
+For each pair of inputs, the new `equalGrossPayProducesEqualNetPay` test calls the real calculator twice for the same employee. The hours and hourly rate differ, but the gross pay is the same.
+
+| Calculator call | Gross pay | Net pay under the standard policy |
+| --- | ---: | ---: |
+| `calculateNetPay("e1", 20, 50)` | GHS 1,000 | GHS 850 |
+| `calculateNetPay("e1", 25, 40)` | GHS 1,000 | GHS 850 |
+
+The new test compares the two returned amounts. If one call returns GHS 850 and the other returns GHS 950, it fails. If both return GHS 950, this test passes because the results agree. This new test checks consistency, not accuracy. The separate tax-boundary test checks that GHS 850 is the correct amount. This matters because the tax policy is based on gross pay. Changing how the same gross pay was earned should not change the net pay. The test repeats the comparison at GHS 800, GHS 1,000, and GHS 5,000 to check that rule in all three tax bands. [PayrollCalculatorTest.java](src/test/java/com/rosewood/payroll/PayrollCalculatorTest.java)

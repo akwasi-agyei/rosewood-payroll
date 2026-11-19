@@ -4,7 +4,8 @@ public class Demo {
     public static void main(String[] args) {
         EmployeeRepository repository = new InMemoryEmployeeRepository();
         GrossPayCalculator grossPayCalculator = new GrossPayCalculator();
-        PayrollCalculator calculator = new PayrollCalculator(repository, grossPayCalculator);
+        TaxPolicy taxPolicy = BandedTaxPolicy.standard();
+        PayrollCalculator calculator = new PayrollCalculator(repository, grossPayCalculator, taxPolicy);
 
         System.out.println(
                 "Result e1, 40h @ 20     -> " + calculator.calculateNetPay("e1", 40, 20));

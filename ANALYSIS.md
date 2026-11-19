@@ -132,7 +132,7 @@ assertEquals(1402.5, calculator.calculateNetPay("e2", 50, 30));
 ### 2. `returnsPayForAnEmployee`
 Any returned number passes. The method returns a `double` which cannot be null. This means the assertion will always pass because it uses `assertNotNull`. 
 ```java
-double net = calculator.calculateNetPay("e1, 35, 25");
+double net = calculator.calculateNetPay("e1", 35, 25);
 assertNotNull(net);
 ```
 For these inputs, the expected net pay is GHS 831.25 but the test passes regardless of what value is passed in the check. A better test would be to check that the employee was paid the correct amount:

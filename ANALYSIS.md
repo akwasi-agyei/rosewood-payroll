@@ -1,11 +1,12 @@
 # Rosewood Payroll starter analysis
 
 ## Baseline
-| Demo case | Observed result |
-| --- | ---: |
-| Known employee, 40 hours at GHS 20 | GHS 760.00 |
-| Known employee, 50 hours at GHS 30|GHS 1,402.50|
-| Unknkown employee, 40 hours at GHS 20|`0.0`|
+
+| Demo case                            | Observed result |
+| ------------------------------------ | --------------: |
+| Known employee, 40 hours at GHS 20   |      GHS 760.00 |
+| Known employee, 50 hours at GHS 30   |    GHS 1,402.50 |
+| Unknown employee, 40 hours at GHS 20 |           `0.0` |
 
 ## What is wrong with the code:
 
@@ -30,7 +31,7 @@ try {
 ```
 
 ### 2. Hours and rates go straight into the calculation
-The starter accepts negative hours and rates, as well as values such as `Nan` and infinity. For example, -1 hour at GHS 20 gives GHS -19 in net pay. Invalid input needs a clear failure that the caller can act on.
+The starter accepts negative hours and rates, as well as values such as `NaN` and infinity. For example, -1 hour at GHS 20 gives GHS -19 in net pay. Invalid input needs a clear failure that the caller can act on.
 ```java
 //PayrollCalculator
 double gross = hoursWorked * hourlyRate;
@@ -71,7 +72,7 @@ System.out.println("Net pay for " + employee.getName() + ": GHS " + net);
 ### Style and readability issues
 - **Magic numbers:** Values like the overtime cutoff `40`, `0.5` for the extra overtime premium, the tax thresholds `1000` and `5000` and other rates such as `0.05`, `0.15`, and `0.25` are also business rules. These values should be given descriptive names and be used as constants. The code snippet under #4 show these values being used.
 
-- **Unecessary comments:** There are a lot of comments that repeat what the code already shows. Some examples are in the snippet below
+- **Unnecessary comments:** There are a lot of comments that repeat what the code already shows. Some examples are in the snippet below
 ```java
 //tax band, worked out from gross pay
 double taxRate;

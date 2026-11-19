@@ -4,14 +4,13 @@ Rosewood Payroll calculates net pay in Ghana cedis from an employee ID, hours wo
 
 ## Running the project
 
-Use JDK 21 and Maven from the project root.
+Use JDK 21 and Maven 3.6.3 or later from the project root.
 
 ```bash
-mvn compile
-mvn exec:java -Dexec.mainClass=com.rosewood.payroll.Demo
+mvn compile exec:java
 ```
 
-The demo shows GHS 760.00 for 40 hours at GHS 20, GHS 1,402.50 for 50 hours at GHS 30, and a clear error for an unknown employee.
+The demo shows GHS 760.00 for 40 hours at GHS 20 and GHS 1,402.50 for 50 hours at GHS 30. It prints the unknown-employee error to standard error as feedback for the person running the demo. The payroll service reports failures to its callers through exceptions, including `PayrollCalculationException` when gross or net pay cannot be represented as a finite number.
 
 ```bash
 mvn test
@@ -45,13 +44,15 @@ The integration test demonstrates this with a hypothetical band from **GHS 10,00
 
 The starter tests stayed green when the overtime premium was temporarily set to zero. The rewritten overtime test failed on the same change because net pay dropped from GHS 1,402.50 to GHS 1,275.00. That shows the test can catch a missed overtime payment.
 
-### Extra improvement - Ensure equal gross pay gives equal net pay
+### Extra improvement — equal gross pay gives equal net pay
 
-For each pair of inputs, the new `equalGrossPayProducesEqualNetPay` test calls the real calculator twice for the same employee. The hours and hourly rate differ, but the gross pay is the same.
+The new test, `equalGrossPayProducesEqualNetPay`, calls the real calculator twice for the same employee. The hours and hourly rate differ, but the gross pay is the same.
 
 | Calculator call | Gross pay | Net pay under the standard policy |
 | --- | ---: | ---: |
 | `calculateNetPay("e1", 20, 50)` | GHS 1,000 | GHS 850 |
 | `calculateNetPay("e1", 25, 40)` | GHS 1,000 | GHS 850 |
 
-The new test compares the two returned amounts. If one call returns GHS 850 and the other returns GHS 950, it fails. If both return GHS 950, this test passes because the results agree. This new test checks consistency, not accuracy. The separate tax-boundary test checks that GHS 850 is the correct amount. This matters because the tax policy is based on gross pay. Changing how the same gross pay was earned should not change the net pay. The test repeats the comparison at GHS 800, GHS 1,000, and GHS 5,000 to check that rule in all three tax bands. [PayrollCalculatorTest.java](src/test/java/com/rosewood/payroll/PayrollCalculatorTest.java)
+The new test compares the two returned amounts. If one call returns GHS 850 and the other returns GHS 950, it fails. If both return GHS 950, it passes because the results agree. The existing tax-boundary test, `appliesTheBandRateToAllGrossPay`, checks that GHS 1,000 gross should yield GHS 850 net.
+
+This matters because the tax policy is based on gross pay. Changing how the same gross pay was earned should leave the net pay the same. The test repeats the comparison at GHS 800, GHS 1,000, and GHS 5,000 to check that rule in all three tax bands. [PayrollCalculatorTest.java](src/test/java/com/rosewood/payroll/PayrollCalculatorTest.java)

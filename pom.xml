@@ -13,6 +13,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.13.4</junit.version>
         <mockito.version>5.18.0</mockito.version>
+        <surefire.version>3.2.5</surefire.version>
+        <exec.maven.plugin.version>3.6.4</exec.maven.plugin.version>
         <jacoco.version>0.8.12</jacoco.version>
         <pitest.version>1.16.1</pitest.version>
         <pitest.junit5.version>1.2.1</pitest.junit5.version>
@@ -48,12 +50,6 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -62,7 +58,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>${surefire.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.maven.plugin.version}</version>
+                <configuration>
+                    <mainClass>com.rosewood.payroll.Demo</mainClass>
+                </configuration>
             </plugin>
 
             <!-- Coverage: mvn verify, then open target/site/jacoco/index.html -->

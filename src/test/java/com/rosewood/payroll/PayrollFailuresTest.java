@@ -13,6 +13,8 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class PayrollFailuresTest {
+    private static final double PAY_TOLERANCE = 0.000_001;
+
     private final EmployeeRepository repository = mock(EmployeeRepository.class);
     private final GrossPayCalculator grossPayCalculator = new GrossPayCalculator();
     private final PayrollCalculator calculator = new PayrollCalculator(
@@ -22,7 +24,7 @@ class PayrollFailuresTest {
     @CsvSource({"0, 20", "40, 0"})
     void returnsZeroPayForAValidEmployee(double hoursWorked, double hourlyRate) {
         when(repository.findById("e1")).thenReturn(new Employee("e1", "Efua"));
-        assertEquals(0.0, calculator.calculateNetPay("e1", hoursWorked, hourlyRate));
+        assertEquals(0.0, calculator.calculateNetPay("e1", hoursWorked, hourlyRate), PAY_TOLERANCE);
     }
 
     @ParameterizedTest
@@ -64,7 +66,7 @@ class PayrollFailuresTest {
     void rejectsGrossPayThatOverflows() {
         when(repository.findById("e1")).thenReturn(new Employee("e1", "Efua"));
 
-        var failure = assertThrows(ArithmeticException.class,
+        var failure = assertThrows(PayrollCalculationException.class,
                 () -> calculator.calculateNetPay("e1", 40, Double.MAX_VALUE));
         assertEquals("Gross pay must be finite for employee e1", failure.getMessage());
     }
@@ -76,8 +78,16 @@ class PayrollFailuresTest {
         var calculatorWithInvalidTax = new PayrollCalculator(
                 repository, grossPayCalculator, invalidTaxPolicy);
 
-        var failure = assertThrows(ArithmeticException.class,
+        var failure = assertThrows(PayrollCalculationException.class,
                 () -> calculatorWithInvalidTax.calculateNetPay("e1", 40, 20));
         assertEquals("Net pay must be finite for employee e1", failure.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {-1, Double.NaN, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY})
+    void rejectsInvalidGrossPayWhenTaxPolicyIsCalledDirectly(double grossPay) {
+        var failure = assertThrows(IllegalArgumentException.class,
+                () -> BandedTaxPolicy.standard().calculateTax(grossPay));
+        assertEquals("Gross pay must be finite and non-negative", failure.getMessage());
     }
 }

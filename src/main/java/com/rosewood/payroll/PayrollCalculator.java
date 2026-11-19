@@ -14,18 +14,19 @@ public class PayrollCalculator {
 
     public double calculateNetPay(String employeeId, double hoursWorked, double hourlyRate) {
         validateInputs(employeeId, hoursWorked, hourlyRate);
+        // The lookup confirms the employee exists. Pay uses the hours and rate supplied by the caller.
         if (repository.findById(employeeId) == null) {
             throw new EmployeeNotFoundException(employeeId);
         }
 
         double grossPay = grossPayCalculator.calculateGrossPay(hoursWorked, hourlyRate);
         if (!Double.isFinite(grossPay)) {
-            throw new ArithmeticException("Gross pay must be finite for employee " + employeeId);
+            throw new PayrollCalculationException("Gross pay must be finite for employee " + employeeId);
         }
 
         double netPay = grossPay - taxPolicy.calculateTax(grossPay);
         if (!Double.isFinite(netPay)) {
-            throw new ArithmeticException("Net pay must be finite for employee " + employeeId);
+            throw new PayrollCalculationException("Net pay must be finite for employee " + employeeId);
         }
         return netPay;
     }

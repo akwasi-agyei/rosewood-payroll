@@ -12,7 +12,6 @@ public class BandedTaxPolicy implements TaxPolicy {
     private final List<TaxBand> bands;
     private final TaxPolicy fallback;
 
-    /** Applies the first matching band, or delegates to the fallback when none matches. */
     public BandedTaxPolicy(List<TaxBand> bands, TaxPolicy fallback) {
         this.bands = List.copyOf(bands);
         this.fallback = fallback;
@@ -21,7 +20,7 @@ public class BandedTaxPolicy implements TaxPolicy {
     public static BandedTaxPolicy standard() {
         return new BandedTaxPolicy(
                 List.of(
-                        new TaxBand(Double.NEGATIVE_INFINITY, MEDIUM_TAX_BAND_START,
+                        new TaxBand(0, MEDIUM_TAX_BAND_START,
                                 grossPay -> grossPay * LOW_TAX_RATE),
                         new TaxBand(MEDIUM_TAX_BAND_START, HIGH_TAX_BAND_START,
                                 grossPay -> grossPay * MEDIUM_TAX_RATE)),
@@ -30,6 +29,9 @@ public class BandedTaxPolicy implements TaxPolicy {
 
     @Override
     public double calculateTax(double grossPay) {
+        if (!Double.isFinite(grossPay) || grossPay < 0) {
+            throw new IllegalArgumentException("Gross pay must be finite and non-negative");
+        }
         for (TaxBand band : bands) {
             if (band.appliesTo(grossPay)) {
                 return band.policy().calculateTax(grossPay);
